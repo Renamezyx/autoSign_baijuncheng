@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .box {
+        /* height: 50px; */
+        width: 50%;
+        background-color: pink;
+        margin: 0 auto;
+    }
+
+    .el-tag+.el-tag {
+        margin-left: 10px;
+    }
+
+    .button-new-tag {
+        margin-left: 10px;
+        height: 32px;
+        line-height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .input-new-tag {
+        width: 90px;
+        margin-left: 10px;
+        vertical-align: bottom;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="box">
+            <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false"
+                @close="handleClose(tag)">
+                {{tag}}
+            </el-tag>
+            <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
+                @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+            </el-input>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            <el-transfer filter-placeholder="请输入城市拼音" v-model="value" :data="data">
+            </el-transfer>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            const generateData = _ => {
+                const data = [];
+                const cities = ['上海', '北京', '广州', '深圳', '南京', '西安', '成都'];
+                const pinyin = ['shanghai', 'beijing', 'guangzhou', 'shenzhen', 'nanjing', 'xian', 'chengdu'];
+                cities.forEach((city, index) => {
+                    data.push({
+                        label: city,
+                        key: index,
+                        pinyin: pinyin[index]
+                    });
+                });
+                return data;
+            };
+            return {
+                data: generateData(),
+                value: []
+            };
+        }
+    })
+
+</script>
+
+</html>

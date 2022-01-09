@@ -50,7 +50,9 @@ while True:
             outData = "gongganRemarks=&workId=B-80732&departmentName=ISBG-BU3-DU1&signOutDate=" + parse.quote(str(playIng[0][0]["Date"])[0:10]) + "&signOutAddress=aQU9ucLsyxhPP%252B1HeM25e1MgwEuKvJbXWTLqLHPsaDVoW7CAkOur8drqla%252BIma9oOl9A9nrEd1Qx%250ANungHgDTNsrhhzmw9mDUMrvmM6mW7dthHtptMjdE%252B7dtUDa0UU8%252F&signOutTime=" + parse.quote(str(playIng[0][0]["OutTime"])) + "&signOutlnglat=113.94030574168%2C22.546208194393&employeeName=%E6%9B%BE%E8%82%B2%E8%BE%89&attId=6945466&hours=&addressId=566&workAddress=%E6%B7%B1%E5%9C%B3%E5%B8%82%E5%8D%97%E5%B1%B1%E5%8C%BA%E7%A7%91%E7%A0%94%E8%B7%AF%E6%9D%BE%E6%97%A5%E9%BC%8E%E7%9B%9B%E5%A4%A7%E5%8E%A6&isSite=onsite&precise=450&juli=89.83&xiabTime=" + parse.quote(str(playIng[0][0]["InTime"])[0:5])
             outresponse = requests.post(url, headers=headers,data=outData)
             print("执行签出")
+            changeState(playIng[0][0]["Date"],2)
             if(outresponse.status_code == 200) :
                 playIng[0][0]["State"] = 2
                 playIng.clear()
+                print(playIng)
        
