@@ -54,4 +54,4 @@ def findPlanToday():
     
     conn.close()
     return result
-# addPlan(createWorkDate("2022-01-05 00:00:00",3))
+# addPlan(createWorkDate("2022-01-09 00:00:00",5))

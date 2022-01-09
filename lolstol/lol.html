@@ -23,40 +23,28 @@
         width: 50%;
         background-color: pink;
         margin: 0 auto;
+        display: flex;
+        flex-direction: column;
     }
 
-    .el-tag+.el-tag {
-        margin-left: 10px;
-    }
 
-    .button-new-tag {
-        margin-left: 10px;
-        height: 32px;
-        line-height: 30px;
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    .input-new-tag {
-        width: 90px;
-        margin-left: 10px;
-        vertical-align: bottom;
+    .result {
+        margin-top: 40px;
     }
 </style>
 
 <body>
     <div id="app">
         <div class="box">
-            <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false"
-                @close="handleClose(tag)">
-                {{tag}}
-            </el-tag>
-            <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small"
-                @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
-            </el-input>
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-            <el-transfer filter-placeholder="请输入城市拼音" v-model="value" :data="data">
-            </el-transfer>
+            <div class="content">
+                <el-tag v-for="tag in tags" :key="tag.name" closable :type="tag.type">
+                    {{tag.name}}
+                </el-tag>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            </div>
+            <div class="result">
+                <el-tag>标签一</el-tag>
+            </div>
         </div>
     </div>
 </body>
@@ -66,23 +54,19 @@
     var app = new Vue({
         el: '#app',
         data() {
-            const generateData = _ => {
-                const data = [];
-                const cities = ['上海', '北京', '广州', '深圳', '南京', '西安', '成都'];
-                const pinyin = ['shanghai', 'beijing', 'guangzhou', 'shenzhen', 'nanjing', 'xian', 'chengdu'];
-                cities.forEach((city, index) => {
-                    data.push({
-                        label: city,
-                        key: index,
-                        pinyin: pinyin[index]
-                    });
-                });
-                return data;
-            };
             return {
-                data: generateData(),
-                value: []
+                dynamicTags: ['玩家一'],
+                tags: [
+                    { name: '标签一', type: '' }
+                ],
+                inputVisible: false,
+                inputValue: ''
             };
+        },
+        methods: {
+            showInput(){
+                
+            }
         }
     })
 
