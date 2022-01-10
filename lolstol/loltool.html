@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>loltool</title>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .box {
+        /* height: 50px; */
+        width: 50%;
+        /* background-color: pink; */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10%;
+    }
+
+    .el-tag {
+        margin-left: 20px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .result {
+        margin-top: 40px;
+    }
+
+    .button-new-tag {
+        width: 90px;
+        vertical-align: bottom;
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+
+    p {
+        margin-left: 20px;
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .history {
+        padding: 20px;
+        padding-bottom: 0;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="box">
+            <div class="content">
+                <p>Players info :</p>
+                <el-tag v-for="(Player,index) in players" :key="index" :disable-transitions="true" closable
+                    @close="Close(Player)" @click="addHistory(index)">
+                    {{Player}}
+                </el-tag>
+                <el-input v-if="inputVisible == 1" v-model="inputValue" ref="saveTagInput" size="small"
+                    @keyup.enter.native="InputConfirm" class="button-new-tag">
+                </el-input>
+                <el-button v-if="inputVisible == 0" size="small" @click="showInput" class="el-tag">+ New Player</el-button>
+            </div>
+            <div class="history">
+                <el-collapse>
+                    <el-collapse-item title="HISTORY" name="1">
+                        <el-table :data="history" style="width: 100%" max-height="250">
+                            <!-- <el-table-column fixed prop="date" label="阶段" width="150">
+                                阶段
+                            </el-table-column> -->
+                            <el-table-column prop="name" label="对手" width="180">
+                            </el-table-column>
+                            <el-table-column fixed="right" label="操作" width="180">
+                                <template slot-scope="scope">
+                                    <el-button @click.native.prevent="deleteRow(scope.$index, history)" type="text"
+                                        size="small">
+                                        DEL
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-collapse-item>
+            </div>
+            <div class="result">
+                <el-tag v-for="(result,index) in results">{{result}}</el-tag>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                players: ['a','c','b','e','d','f','g'],
+                results: [],
+                inputVisible: 0,
+                inputValue: '',
+                history: [],
+                fliterItem: [],
+                isEnter_Blur: false
+            };
+        },
+        methods: {
+            showInput() {
+                this.inputVisible = 1
+                this.$nextTick(_ => {
+                    this.$refs.saveTagInput.$refs.input.focus()
+                });
+            },
+            InputConfirm() {
+                    this.isEnter_Blur = true
+                    let inputValue = this.inputValue
+                    if (inputValue != null && this.inputValue != '' && this.players.indexOf(inputValue) == -1) {
+                        this.players.push(inputValue)
+                    }
+                    else this.$message({
+                        message: 'error: key and null',
+                        type: "error",
+                        showClose: true
+                    })
+                    if (this.players.length >= 7) this.inputVisible = 2
+                    else this.inputVisible = 0
+                    this.inputValue = ''
+                    //
+                    this.fliterItem = this.fliterItem.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
+                    this.results = this.players.filter((value) => {
+                        if (this.fliterItem.indexOf(value) == -1)
+                            return value
+                    })
+            },
+            Close(player) {
+                this.players.splice(this.players.indexOf(player), 1)
+                if (this.players.length == 0) {
+                    this.$message({
+                        showClose: true,
+                        message: "NO.1 oOO!!!",
+                        type: "success"
+                    })
+                    this.players = []
+                    this.history = []
+                    this.fliterItem = []
+                }
+                console.log(this.players)
+
+                this.fliterItem = this.players.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
+                console.log(this.fliterItem)
+                console.log(this.players)
+                if (this.players.length < 7) this.inputVisible = 0
+                this.results = this.players.filter((value) => {
+                    if (this.fliterItem.indexOf(value) == -1)
+                        return value
+                })
+                console.log(this.fliterItem)
+                console.log(this.players)
+            },
+            addHistory(index) {
+                this.$message({
+                    showClose: true,
+                    message: index,
+                    type: "success"
+                })
+                this.history.push({ name: this.players[index] })
+                this.fliterItem.push(this.players[index])
+                this.fliterItem = this.players.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
+                this.results = this.players.filter((value) => {
+                    if (this.fliterItem.indexOf(value) == -1)
+                        return value
+                })
+                console.log(this.fliterItem)
+            },
+            deleteRow(index, rows) {
+                this.$message({
+                    showClose: true,
+                    message: '移除与 \'' + rows[index].name + '\' 的对战记录',
+                    type: "success"
+                })
+                rows.splice(index, 1)
+                this.fliterItem = this.history.length < 4 ? this.history : this.history.slice(-(this.players.length - 3))
+                this.fliterItem = this.fliterItem.map((value) => {
+                    return value.name
+                })
+                this.results = this.players.filter((value) => {
+                    console.log(value)
+                    console.log(this.fliterItem)
+                    if (this.fliterItem.indexOf(value) == -1)
+                        return value
+                })
+            }
+        },
+        computed: {
+            Newhistory() {
+                return this.history.map((value) => {
+                    return value.name
+                })
+            }
+        }
+    })
+
+</script>
+
+</html>
