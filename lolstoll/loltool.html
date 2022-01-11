@@ -69,7 +69,8 @@
                 <el-input v-if="inputVisible == 1" v-model="inputValue" ref="saveTagInput" size="small"
                     @keyup.enter.native="InputConfirm" class="button-new-tag">
                 </el-input>
-                <el-button v-if="inputVisible == 0" size="small" @click="showInput" class="el-tag">+ New Player</el-button>
+                <el-button v-if="inputVisible == 0" size="small" @click="showInput" class="el-tag">+ New Player
+                </el-button>
             </div>
             <div class="history">
                 <el-collapse>
@@ -78,9 +79,9 @@
                             <!-- <el-table-column fixed prop="date" label="阶段" width="150">
                                 阶段
                             </el-table-column> -->
-                            <el-table-column prop="name" label="对手" width="180">
+                            <el-table-column prop="name" label="Opponent" width="180">
                             </el-table-column>
-                            <el-table-column fixed="right" label="操作" width="180">
+                            <el-table-column fixed="right" label="Option" width="180">
                                 <template slot-scope="scope">
                                     <el-button @click.native.prevent="deleteRow(scope.$index, history)" type="text"
                                         size="small">
@@ -92,7 +93,7 @@
                     </el-collapse-item>
             </div>
             <div class="result">
-                <el-tag v-for="(result,index) in results">{{result}}</el-tag>
+                <el-tag v-for="(result,index) in results" :key="index">{{result}}</el-tag>
             </div>
         </div>
     </div>
@@ -104,13 +105,13 @@
         el: '#app',
         data() {
             return {
-                players: ['a','c','b','e','d','f','g'],
-                results: [],
+                players: [],
+                // results: [],
                 inputVisible: 0,
                 inputValue: '',
                 history: [],
-                fliterItem: [],
-                isEnter_Blur: false
+                isEnter_Blur: false,
+                test: []
             };
         },
         methods: {
@@ -121,90 +122,90 @@
                 });
             },
             InputConfirm() {
-                    this.isEnter_Blur = true
-                    let inputValue = this.inputValue
-                    if (inputValue != null && this.inputValue != '' && this.players.indexOf(inputValue) == -1) {
-                        this.players.push(inputValue)
-                    }
-                    else this.$message({
-                        message: 'error: key and null',
-                        type: "error",
-                        showClose: true
-                    })
-                    if (this.players.length >= 7) this.inputVisible = 2
-                    else this.inputVisible = 0
-                    this.inputValue = ''
-                    //
-                    this.fliterItem = this.fliterItem.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
-                    this.results = this.players.filter((value) => {
-                        if (this.fliterItem.indexOf(value) == -1)
-                            return value
-                    })
+                this.isEnter_Blur = true
+                let inputValue = this.inputValue
+                if (inputValue != null && this.inputValue != '' && this.players.indexOf(inputValue) == -1) {
+                    this.players.push(inputValue)
+                }
+                else this.$message({
+                    message: 'error: key and null',
+                    type: "error",
+                    showClose: true
+                })
+                if (this.players.length >= 7) this.inputVisible = 2
+                else this.inputVisible = 0
+                this.inputValue = ''
+                //
+
             },
             Close(player) {
-                this.players.splice(this.players.indexOf(player), 1)
-                if (this.players.length == 0) {
-                    this.$message({
-                        showClose: true,
-                        message: "NO.1 oOO!!!",
-                        type: "success"
+                if (confirm("Are you sure ?")) {
+                    this.players.splice(this.players.indexOf(player), 1)
+                    //玩家出局
+                    this.history = this.history.filter((value) => {
+                        if (value.name.indexOf(player) == -1)
+                            return value
                     })
-                    this.players = []
-                    this.history = []
-                    this.fliterItem = []
+                    if (this.players.length == 0) {
+                        this.$message({
+                            showClose: true,
+                            message: "NO.1 oOO!!!",
+                            type: "success"
+                        })
+                        this.players = []
+                        this.history = []
+                    }
                 }
-                console.log(this.players)
-
-                this.fliterItem = this.players.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
-                console.log(this.fliterItem)
-                console.log(this.players)
-                if (this.players.length < 7) this.inputVisible = 0
-                this.results = this.players.filter((value) => {
-                    if (this.fliterItem.indexOf(value) == -1)
-                        return value
-                })
-                console.log(this.fliterItem)
-                console.log(this.players)
             },
             addHistory(index) {
-                this.$message({
-                    showClose: true,
-                    message: index,
-                    type: "success"
-                })
-                this.history.push({ name: this.players[index] })
-                this.fliterItem.push(this.players[index])
-                this.fliterItem = this.players.length < 4 ? this.fliterItem : this.fliterItem.slice(-(this.players.length - 3))
-                this.results = this.players.filter((value) => {
-                    if (this.fliterItem.indexOf(value) == -1)
-                        return value
-                })
-                console.log(this.fliterItem)
+                if (this.results.indexOf(this.players[index]) == -1) {
+                    this.$message({
+                        showClose: true,
+                        message: "error: check your option ",
+                        type: "error"
+                    })
+                }
+                else {
+                    this.$message({
+                        showClose: true,
+                        message: 'vs  ' + this.players[index],
+                        type: "success"
+                    })
+                    this.history.push({ name: this.players[index] })
+                }
             },
             deleteRow(index, rows) {
                 this.$message({
                     showClose: true,
-                    message: '移除与 \'' + rows[index].name + '\' 的对战记录',
+                    message: 'DEL \'' + rows[index].name + '\' history success !',
                     type: "success"
                 })
                 rows.splice(index, 1)
-                this.fliterItem = this.history.length < 4 ? this.history : this.history.slice(-(this.players.length - 3))
-                this.fliterItem = this.fliterItem.map((value) => {
-                    return value.name
-                })
-                this.results = this.players.filter((value) => {
-                    console.log(value)
-                    console.log(this.fliterItem)
-                    if (this.fliterItem.indexOf(value) == -1)
-                        return value
-                })
             }
         },
         computed: {
-            Newhistory() {
-                return this.history.map((value) => {
-                    return value.name
-                })
+            results() {
+                let filterItem = []
+                if (this.players.length > 3 && this.history.length >= 4) {
+                    filterItem = this.history.slice(-(this.players.length - 3)).map((value) => {
+                        return value.name
+                    })
+                    return this.players.filter((value) => {
+                        if (filterItem.indexOf(value) == -1)
+                            return value
+                    })
+                }
+                else if (this.players.length > 3 && this.history.length < 4) {
+                    filterItem = this.history.map((value) => {
+                        return value.name
+                    })
+                    console.log(filterItem)
+                    return this.players.filter((value) => {
+                        if (filterItem.indexOf(value) == -1)
+                            return value
+                    })
+                }
+                else return this.players
             }
         }
     })
