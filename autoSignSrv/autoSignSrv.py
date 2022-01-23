@@ -3,6 +3,8 @@ from flask import request
 import requests
 import time
 from urllib import parse
+from SMTP import mail
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -52,6 +54,7 @@ def adminSignOut():
     outresponse = requests.post(url, headers=headers,data=outData)
     if(outresponse.status_code == 200):
         return "success"
+
     return outData
 
 
